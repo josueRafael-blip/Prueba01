@@ -11,65 +11,68 @@ st.markdown("""
 Ingresa dos ecuaciones lineales en formato `y = ax + b`, por ejemplo:
 - `y = 2x + 3`
 - `y = -x + 5`
+
+Un ejemplo ya viene cargado por defecto para que puedas probarlo fácilmente.
 """)
 
-# Función para parsear una ecuación en forma 'y = ax + b'
+# Función para parsear ecuación en formato 'y = ax + b'
 def parse_ecuacion(equacion):
     try:
-        # Usamos regex para obtener coeficiente y término independiente
+        # Regex para capturar 'a' y 'b'
         pattern = r"y\s*=\s*([+-]?\s*\d*\.?\d*)x\s*([+-]\s*\d+\.?\d*)"
         match = re.match(pattern, ecuacion.replace(" ", ""))
         if not match:
             return None
-        a = float(match.group(1).replace(" ", "") or "1")
-        b = float(match.group(2).replace(" ", ""))
+        a_str = match.group(1).replace(" ", "")
+        b_str = match.group(2).replace(" ", "")
+        a = float(a_str) if a_str not in ["", "+", "-"] else float(f"{a_str}1")
+        b = float(b_str)
         return a, b
     except:
         return None
 
-# Entradas de usuario
-with st.form("ecuaciones_form"):
-    eq1 = st.text_input("Ecuación 1:", value="y = 2x + 3")
-    eq2 = st.text_input("Ecuación 2:", value="y = -x + 5")
-    submitted = st.form_submit_button("📥 Ingresar ecuaciones")
+# Entradas del usuario con valores por defecto (ejemplo precargado)
+eq1 = st.text_input("Ecuación 1:", value="y = 2x + 3")
+eq2 = st.text_input("Ecuación 2:", value="y = -x + 5")
 
-if submitted:
-    coef1 = parse_ecuacion(eq1)
-    coef2 = parse_ecuacion(eq2)
+# Botón opcional para recalcular con nuevas ecuaciones
+if st.button("🔍 Calcular punto de equilibrio"):
+    st.session_state['eq1'] = eq1
+    st.session_state['eq2'] = eq2
 
-    if coef1 and coef2:
-        st.success("✅ Ecuaciones ingresadas correctamente.")
-        st.session_state['coef1'] = coef1
-        st.session_state['coef2'] = coef2
+# Usar las ecuaciones actuales o las predeterminadas
+ecuacion_1 = st.session_state.get('eq1', eq1)
+ecuacion_2 = st.session_state.get('eq2', eq2)
+
+coef1 = parse_ecuacion(ecuacion_1)
+coef2 = parse_ecuacion(ecuacion_2)
+
+if coef1 and coef2:
+    a1, b1 = coef1
+    a2, b2 = coef2
+
+    if a1 == a2:
+        st.warning("⚠️ Las rectas son paralelas. No hay punto de equilibrio.")
     else:
-        st.error("❌ Formato incorrecto. Usa el formato: y = ax + b")
+        # Calcular punto de equilibrio
+        x_eq = (b2 - b1) / (a1 - a2)
+        y_eq = a1 * x_eq + b1
 
-# Botón para calcular el punto de equilibrio
-if 'coef1' in st.session_state and 'coef2' in st.session_state:
-    if st.button("🔍 Calcular punto de equilibrio"):
-        a1, b1 = st.session_state['coef1']
-        a2, b2 = st.session_state['coef2']
+        st.success(f"📍 Punto de equilibrio: **x = {x_eq:.2f}**, **y = {y_eq:.2f}**")
 
-        if a1 == a2:
-            st.warning("⚠️ Las rectas son paralelas, no hay punto de equilibrio.")
-        else:
-            # Resolver a1x + b1 = a2x + b2
-            x_eq = (b2 - b1) / (a1 - a2)
-            y_eq = a1 * x_eq + b1
+        # Graficar
+        x_vals = np.linspace(x_eq - 10, x_eq + 10, 400)
+        y1_vals = a1 * x_vals + b1
+        y2_vals = a2 * x_vals + b2
 
-            st.success(f"📍 Punto de equilibrio encontrado:  \n**x = {x_eq:.2f}, y = {y_eq:.2f}**")
-
-            # Mostrar gráfica
-            x_vals = np.linspace(x_eq - 10, x_eq + 10, 400)
-            y1_vals = a1 * x_vals + b1
-            y2_vals = a2 * x_vals + b2
-
-            fig, ax = plt.subplots()
-            ax.plot(x_vals, y1_vals, label=eq1, color="blue")
-            ax.plot(x_vals, y2_vals, label=eq2, color="green")
-            ax.plot(x_eq, y_eq, 'ro', label="Punto de equilibrio")
-            ax.axhline(0, color='black', linewidth=0.5)
-            ax.axvline(0, color='black', linewidth=0.5)
-            ax.legend()
-            ax.grid(True)
-            st.pyplot(fig)
+        fig, ax = plt.subplots()
+        ax.plot(x_vals, y1_vals, label=ecuacion_1, color="blue")
+        ax.plot(x_vals, y2_vals, label=ecuacion_2, color="green")
+        ax.plot(x_eq, y_eq, 'ro', label="Punto de equilibrio")
+        ax.axhline(0, color='black', linewidth=0.5)
+        ax.axvline(0, color='black', linewidth=0.5)
+        ax.legend()
+        ax.grid(True)
+        st.pyplot(fig)
+else:
+    st.error("❌ Formato incorrecto. Asegúrate de usar el formato: `y = ax + b`.")
