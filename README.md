@@ -30,3 +30,44 @@ Clona este repositorio en tu máquina local:
 git clone https://github.com/tuusuario/nombre-del-repositorio.git
 cd nombre-del-repositorio
 
+Instala las dependencias (si las hay) o ejecuta directamente el archivo principal.
+
+▶️ Uso
+
+Dependiendo de la implementación (por ejemplo, en Python), podrías ejecutar algo como:
+
+python equilibrio.py
+
+Y seguir las instrucciones para ingresar tus ecuaciones.
+
+📌 Ejemplo
+
+Si introduces las siguientes ecuaciones:
+
+f(x) = 2x + 3  
+g(x) = 5x - 6
+
+
+El programa calculará el valor de x en el que ambas funciones se igualan y mostrará el resultado:
+
+Punto de equilibrio: x = 3, f(x) = g(x) = 9
+
+📈 Visualización (opcional)
+
+Si el proyecto incluye una visualización gráfica, podrás ver la intersección de las rectas en un gráfico generado automáticamente.
+
+🛠️ Tecnologías usadas
+
+Python / JavaScript / Otro lenguaje
+
+Librerías opcionales (NumPy, Matplotlib, etc.)
+
+📄 Licencia
+
+Este proyecto está bajo la licencia MIT
+.
+
+🤝 Contribuciones
+
+¡Las contribuciones son bienvenidas! Si deseas mejorar este proyecto, por favor abre un pull request o reporta un issue.
+
